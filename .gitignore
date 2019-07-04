@@ -328,3 +328,8 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# helm configuration values
+*.azds.yaml
+Deploy/helm/__values/*
+!Deploy/helm/__values/readme.txt

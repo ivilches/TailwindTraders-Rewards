@@ -2,27 +2,15 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "servicePrincipalId": {
-      "type": "string"
-    },
-    "servicePrincipalSecret": {
-      "type": "securestring"
-    },
     "sqlServerAdministratorUser": {
       "type": "string",
       "defaultvalue": "sqladmin"
     },
     "sqlServerAdministratorPassword": {
       "type": "securestring"
-    },
-    "aksVersion": {
-      "type": "string",
-      "defaultValue": "1.14"
     }
   },
   "variables": {
-    "acr_name": "[concat('ttacr',uniqueString(resourceGroup().id))]",
-    "aks_name": "[concat('tailwindtradersaks',uniqueString(resourceGroup().id))]",
     "web_name": "[concat('ttrewards',uniqueString(resourceGroup().id))]",
     "plan_name": "[concat('ttrewardsplan',uniqueString(resourceGroup().id))]",
     "function_name": "[concat('ttrewardsfunction',uniqueString(resourceGroup().id))]",
@@ -30,144 +18,14 @@
     "logicapp_name": "[concat('ttlogicapp',uniqueString(resourceGroup().id))]",
     "definition": "[concat('{\"contentVersion\":\"1.0.0.0\",\"parameters\":{},\"actions\":{},\"triggers\":{},\"outputs\":{},\"$schema\":\"', variables('workflowSchema'), '\"}')]",
     "workflowSchema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-    "sqlserver_name": "[concat('ttsqlserver',uniqueString(resourceGroup().id))]",
-    "workspaceName": "[concat('ttoms', uniqueString(resourceGroup().id))]",
-    "omsWorkspaceId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+    "sqlserver_name": "[concat('ttsqlserver',uniqueString(resourceGroup().id))]"
   },
   "resources": [
     {
-      "type": "Microsoft.ContainerRegistry/registries",
-      "sku": {
-        "name": "Standard"
-      },
-      "name": "[variables('acr_name')]",
-      "apiVersion": "2017-10-01",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "adminUserEnabled": true
-      }
-    },
-    {
-      "type": "Microsoft.ContainerService/managedClusters",
-      "name": "[variables('aks_name')]",
-      "apiVersion": "2018-03-31",
-      "location": "[resourceGroup().location]",
-      "tags": {},
-      "properties": {
-        "kubernetesVersion": "[parameters('aksVersion')]",
-        "enableRBAC": true,
-        "dnsPrefix": "[variables('aks_name')]",
-        "addonProfiles": {
-          "httpApplicationRouting": {
-            "enabled": true
-          },
-          "omsagent": {
-            "enabled": true,
-            "config": {
-              "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
-            }
-          }
-        },
-        "agentPoolProfiles": [
-          {
-            "name": "agentpool",
-            "count": 2,
-            "vmSize": "Standard_DS2_v2",
-            "osType": "Linux",
-            "osDiskSizeGB": 0,
-            "storageProfile": "ManagedDisks"
-          },
-          {
-            "name": "npwin",
-            "count": 2,
-            "vmSize": "Standard_D2s_v3",
-            "osType": "Windows",
-            "osDiskSizeGB": 0,
-            "storageProfile": "ManagedDisks"
-          }
-        ],
-        "servicePrincipalProfile": {
-          "clientId": "[parameters('servicePrincipalId')]",
-          "secret": "[parameters('servicePrincipalSecret')]"
-        },
-        "networkProfile": {
-          "networkPlugin": "azure"
-        }
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "name": "SolutionDeployment",
-      "apiVersion": "2017-05-10",
-      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
-      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "apiVersion": "2015-11-01-preview",
-              "type": "Microsoft.OperationsManagement/solutions",
-              "location": "[resourceGroup().location]",
-              "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
-              "properties": {
-                "workspaceResourceId": "[variables('omsWorkspaceId')]"
-              },
-              "plan": {
-                "name": "[concat('ContainerInsights', '(', split(variables('omsWorkspaceId'),'/')[8], ')')]",
-                "product": "[concat('OMSGallery/', 'ContainerInsights')]",
-                "promotionCode": "",
-                "publisher": "Microsoft"
-              }
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "name": "WorkspaceDeployment",
-      "apiVersion": "2017-05-10",
-      "subscriptionId": "[split(variables('omsWorkspaceId'),'/')[2]]",
-      "resourceGroup": "[split(variables('omsWorkspaceId'),'/')[4]]",
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "apiVersion": "2015-11-01-preview",
-              "type": "Microsoft.OperationalInsights/workspaces",
-              "location": "[resourceGroup().location]",
-              "name": "[variables('workspaceName')]",
-              "properties": {
-                "sku": {
-                  "name": "standalone"
-                }
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Insights/components",
+      "type": "microsoft.insights/components",
       "name": "[variables('web_name')]",
       "apiVersion": "2014-08-01",
-      "location": "[resourceGroup().location]",
+      "location": "westus2",
       "properties": {
         "ApplicationId": "[variables('web_name')]",
         "Application_Type": "web",
@@ -184,6 +42,39 @@
       "name": "[variables('plan_name')]",
       "apiVersion": "2017-08-01",
       "location": "[resourceGroup().location]"
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "kind": "app",
+      "name": "[variables('web_name')]",
+      "apiVersion": "2016-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('microsoft.insights/components/', variables('web_name')), '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "ByPassLogicApp",
+              "value": "false"
+            }
+          ],
+          "connectionStrings": [
+            {
+              "name": "dbContext",
+              "type": "SQLAzure",
+              "connectionString": "[concat('Server=tcp:',variables('sqlserver_name'),'.database.windows.net,1433;Initial Catalog=rewardsdb;Persist Security Info=False;User ID=',parameters('sqlServerAdministratorUser'),';Password=',parameters('sqlServerAdministratorPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+            }
+          ]
+        },
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('plan_name'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('plan_name'))]",
+        "[resourceId('microsoft.insights/components/', variables('web_name'))]"
+      ]
     },
     {
       "type": "Microsoft.Web/sites",
