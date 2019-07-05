@@ -13,7 +13,7 @@ We have added an ARM template so you can automate the creation of the resources 
 [Azure Deployment documentation](./Documents/Azure-Deployment.md)
 
 # Data initial migration and seeding
-Previously to launch for first time the application you must create a Database in SQL Server named `rewards` and execute the sql script `Source\SQLScripts\CreateTablesAndPopulate.sql`, in order to create the needed tables and seeding with the required data.
+Previously to launch for first time the application you must create a Database in SQL Server named `rewardsdb` and execute the sql script `Source\SQLScripts\CreateTablesAndPopulate.sql`, in order to create the needed tables and seeding with the required data.
 
 # Demo Script
 
