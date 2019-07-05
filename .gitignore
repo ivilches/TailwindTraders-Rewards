@@ -247,6 +247,9 @@ ServiceFabricBackup/
 *.ldf
 *.ndf
 
+!rewardsdb.mdf
+!rewardsdb_log.ldf
+
 # Business Intelligence projects
 *.rdl.data
 *.bim.layout
