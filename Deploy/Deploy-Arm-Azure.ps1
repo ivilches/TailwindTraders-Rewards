@@ -5,11 +5,12 @@ Param(
     [parameter(Mandatory=$false)][string]$password,
     [parameter(Mandatory=$false)][string]$dbAdmin="ttadmin",
     [parameter(Mandatory=$false)][string]$dbPassword="Passw0rd1!",
+    [parameter(Mandatory=$false)][string]$winUser="ttradmin",
+    [parameter(Mandatory=$false)][string]$winPassword="Passw0rd2!",
     [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $spCreated=$false
-$script="./deployment.json"
-
+$script="./deployment-no-aks.json"
 if (-not $deployAks) {
     $script="./deployment-no-aks.json"
 }
@@ -34,14 +35,48 @@ if ($deployAks) {
         $spCreated=$true
     }
 
+    Write-Host "Install required az-cli extension aks-preview" -ForegroundColor Yellow
+    az extension add --name aks-preview
+
     Write-Host "Getting last AKS version in location $location" -ForegroundColor Yellow
     $aksVersions=$(az aks get-versions -l $location --query  orchestrators[].orchestratorVersion -o json | ConvertFrom-Json)
     $aksLastVersion=$aksVersions[$aksVersions.Length-1]
+
     Write-Host "AKS last version is $aksLastVersion" -ForegroundColor Yellow
+    if (-not $aksLastVersion.StartsWith("1.14.0")) {
+        Write-Host "AKS 1.14 required. Exiting." -ForegroundColor Red
+        exit 1
+    }
 
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
     az group create -n $resourceGroup -l $location
-    az group deployment create -g $resourceGroup --template-file $script --parameters servicePrincipalId=$clientId --parameters servicePrincipalSecret=$password --parameters sqlServerAdministratorLogin=$dbAdmin --parameters sqlServerAdministratorLoginPassword=$dbPassword --parameters aksVersion=$aksLastVersion
+    az group deployment create -g $resourceGroup --template-file $script `
+      --parameters sqlServerAdministratorUser=$dbAdmin `
+      --parameters sqlServerAdministratorPassword=$dbPassword 
+    #   --parameters servicePrincipalId=$clientId `
+    #   --parameters servicePrincipalSecret=$password `
+    #   --parameters aksVersion=$aksLastVersion
+
+    Write-Host "Creating ARM template..." -ForegroundColor Yellow
+    $aksName = "tailwindtradersaks" + [guid]::NewGuid()
+    az aks create --resource-group $resourceGroup `
+        --name $aksName `
+        --node-count 2 `
+        --enable-addons monitoring `
+        --kubernetes-version $aksLastVersion   `
+        --windows-admin-username $winUser  `
+        --windows-admin-password $winPassword  `
+        --enable-vmss `
+        --network-plugin azure  `
+        --service-principal $clientId `
+        --client-secret $password
+
+    az aks nodepool add --resource-group $resourceGroup `
+        --cluster-name $aksName `
+        --os-type Windows `
+        --name npwin `
+        --node-count 2 `
+        --kubernetes-version $aksLastVersion
 }
 else {
     # Deployment without AKS can be done in a existing or non-existing resource group.
@@ -49,19 +84,12 @@ else {
         Write-Host "Creating resource group $resourceGroup in $location"
         az group create -n $resourceGroup -l $location
     }
+    
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
-    az group deployment create -g $resourceGroup --template-file $script --parameters sqlServerAdministratorLogin=$dbAdmin --parameters sqlServerAdministratorLoginPassword=$dbPassword
+    az group deployment create -g $resourceGroup --template-file $script `
+      --parameters sqlServerAdministratorUser=$dbAdmin `
+      --parameters sqlServerAdministratorPassword=$dbPassword
 }
-
-Write-Host "Creating stockdb database in PostgreSQL" -ForegroundColor Yellow
-$pgs = $(az postgres server list -g $resourceGroup -o json | ConvertFrom-Json)
-$pg=$pgs[0]
-Write-Host "PostgreSQL server is $($pg.name)" -ForegroundColor Yellow
-az postgres db create -g $resourceGroup -s $pg.name -n stockdb
-Write-Host "Creating Firewall rule in $($pg.name) to allow connection from Azure Services" -ForegroundColor Yellow
-az postgres server firewall-rule create --end-ip-address 0.0.0.0 --start-ip-address 0.0.0.0 --name AllowAllWindowsAzureIps -g $resourceGroup --server-name $pg.name
-Write-Host "Disabling ssl enforcement for $($pg.name)" -ForegroundColor Yellow
-az postgres server update -g $resourceGroup --ssl-enforcement Disabled --name $pg.name
 
 if ($spCreated) {
     Write-Host "-----------------------------------------" -ForegroundColor Yellow

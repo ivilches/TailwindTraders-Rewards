@@ -8,9 +8,9 @@ You can take a look at our live running website following this address: [https:/
 
 # Deploy to Azure
 
-We have added an ARM template so you can automate the creation of the resources required for this app.
+We have added an ARM template so you can automate the creation of the resources required for this app. 
 
-[![Deploy to Azure](Documents/Images/deploy-to-azure.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment.json)
+[Azure Deployment documentation](./Documents/Azure-Deployment.md)
 
 # Data initial migration and seeding
 Previously to launch for first time the application you must create a Database in SQL Server named `rewards` and execute the sql script `Source\SQLScripts\CreateTablesAndPopulate.sql`, in order to create the needed tables and seeding with the required data.

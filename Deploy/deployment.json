@@ -91,7 +91,7 @@
           "secret": "[parameters('servicePrincipalSecret')]"
         },
         "networkProfile": {
-          "networkPlugin": "azure"
+          "networkPlugin": "kubenet"
         }
       },
       "dependsOn": [
