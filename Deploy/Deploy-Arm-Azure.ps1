@@ -43,7 +43,7 @@ if ($deployAks) {
     $aksLastVersion=$aksVersions[$aksVersions.Length-1]
 
     Write-Host "AKS last version is $aksLastVersion" -ForegroundColor Yellow
-    if (-not $aksLastVersion.StartsWith("1.14.0")) {
+    if (-not $aksLastVersion.StartsWith("1.14")) {
         Write-Host "AKS 1.14 required. Exiting." -ForegroundColor Red
         exit 1
     }
