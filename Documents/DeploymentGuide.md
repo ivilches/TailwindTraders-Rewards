@@ -68,6 +68,14 @@ The script checks that all needed resources exists in the resource group. If som
 
 ## Build & deploy images to ACR
 
+### Publish the project
+ In order wer are using a legacy app, you'll need to publish the Web project previously to execute the following steps of this guide.
+To publish the Web project, follow these instructions:
+1. Open Visual Studio as Administrator.
+2. Open the TailwindTraders.Rewards.Website solution.
+3. Right click in the TailwindTraders.Rewards.Website project and click in `Publish...`. This publish will generate the neccessary files to run the project with docker. In this case, we have a .pubxml configuration file to publish the artifacts inside the path defined in the Dockerfile (`obj/Docker/publish`  
+
+
 You can **manually use docker-compose** to build and push the images to the ACR. If using compose you can set following environment variables:
 
 * `TAG`: Will contain the generated docker images tag
@@ -82,6 +90,7 @@ Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Pu
 * `resourceGroup`: Resource group where ACR is. Mandatory.
 * `acrName`: ACR name (not login server). Mandatory.
 * `dockerTag`: Tag to use for generated images (defaults to `latest`)
+* `dockerFile`: path to the docker compose file to be used. Defaults to `docker-compose-win.yml`
 * `dockerBuild`: If `$true` (default value) docker images will be built using `docker-compose build`.
 * `dockerPush`: If `$true` (default value) docker images will be push to ACR using `docker-compose push`.
 

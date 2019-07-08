@@ -1,6 +1,7 @@
 Param(
     [parameter(Mandatory=$true)][string]$resourceGroup,
     [parameter(Mandatory=$true)][string]$acrName,
+    [parameter(Mandatory=$false)][string]$dockerFile="docker-compose-win.yml",
     [parameter(Mandatory=$false)][bool]$dockerBuild=$true,
     [parameter(Mandatory=$false)][bool]$dockerPush=$true,
     [parameter(Mandatory=$false)][string]$dockerTag="latest"
@@ -23,7 +24,7 @@ if ($dockerBuild) {
     Push-Location ..\Source
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
-    docker-compose build
+    docker-compose -f $dockerFile build
     Pop-Location
 }
 
@@ -35,7 +36,7 @@ if ($dockerPush) {
     docker login -p $acrPwd -u $acrUser $acrLoginServer
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
-    docker-compose push
+    docker-compose -f $dockerFile push
     Pop-Location
 }
 

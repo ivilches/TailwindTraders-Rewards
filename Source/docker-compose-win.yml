@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  tailwindtraders.rewards.website:
+    image: ${REGISTRY:-tailwindtraders}/tailwindtradersrewardswebsite:${TAG:-latest}
+    build:
+      context: .\Website
+      dockerfile: Dockerfile
+      args:
+        sdkImageTag: 3.5
+        # sdkImageTag: 3.5-windowsservercore-ltsc2019

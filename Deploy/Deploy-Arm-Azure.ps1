@@ -6,11 +6,11 @@ Param(
     [parameter(Mandatory=$false)][string]$dbAdmin="ttadmin",
     [parameter(Mandatory=$false)][string]$dbPassword="Passw0rd1!",
     [parameter(Mandatory=$false)][string]$winUser="ttradmin",
-    [parameter(Mandatory=$false)][string]$winPassword="Passw0rd2!",
+    [parameter(Mandatory=$false)][string]$winPassword="longPassw0rd2!",
     [parameter(Mandatory=$false)][bool]$deployAks=$true
 )
 $spCreated=$false
-$script="./deployment-no-aks.json"
+$script="./deployment.json"
 if (-not $deployAks) {
     $script="./deployment-no-aks.json"
 }
@@ -21,7 +21,7 @@ Write-Host "-------------------------------------------------------- " -Foregrou
 
 $rg = $(az group show -n $resourceGroup -o json | ConvertFrom-Json)
 if ($deployAks) {
-    # Deployment including AKS must be done in a non-existent resource group
+    Deployment including AKS must be done in a non-existent resource group
     if ($rg) {
         Write-Host "Resource group $resourceGroup already exists. Exiting." -ForegroundColor Red
         exit 1
@@ -51,18 +51,18 @@ if ($deployAks) {
     Write-Host "Begining the ARM deployment..." -ForegroundColor Yellow
     az group create -n $resourceGroup -l $location
     az group deployment create -g $resourceGroup --template-file $script `
-      --parameters sqlServerAdministratorUser=$dbAdmin `
-      --parameters sqlServerAdministratorPassword=$dbPassword 
-    #   --parameters servicePrincipalId=$clientId `
-    #   --parameters servicePrincipalSecret=$password `
-    #   --parameters aksVersion=$aksLastVersion
+        --parameters servicePrincipalId=$clientId `
+        --parameters servicePrincipalSecret=$password `
+        --parameters sqlServerAdministratorUser=$dbAdmin `
+        --parameters sqlServerAdministratorPassword=$dbPassword `
+        --parameters aksVersion=$aksLastVersion
 
     Write-Host "Creating ARM template..." -ForegroundColor Yellow
-    $aksName = "tailwindtradersaks" + [guid]::NewGuid()
     az aks create --resource-group $resourceGroup `
-        --name $aksName `
+        --name $resourceGroup `
         --node-count 2 `
         --enable-addons monitoring `
+        --generate-ssh-keys `
         --kubernetes-version $aksLastVersion   `
         --windows-admin-username $winUser  `
         --windows-admin-password $winPassword  `
@@ -72,7 +72,7 @@ if ($deployAks) {
         --client-secret $password
 
     az aks nodepool add --resource-group $resourceGroup `
-        --cluster-name $aksName `
+        --cluster-name $resourceGroup `
         --os-type Windows `
         --name npwin `
         --node-count 2 `

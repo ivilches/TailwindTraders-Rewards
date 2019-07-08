@@ -25,7 +25,7 @@
       "type": "microsoft.insights/components",
       "name": "[variables('web_name')]",
       "apiVersion": "2014-08-01",
-      "location": "westus2",
+      "location": "[resourceGroup().location]",
       "properties": {
         "ApplicationId": "[variables('web_name')]",
         "Application_Type": "web",

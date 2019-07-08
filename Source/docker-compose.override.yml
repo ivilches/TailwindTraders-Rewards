@@ -19,8 +19,3 @@ services:
     - AdminPassword=adm!n%
     ports:
       - "2100:80"
-
-networks:
-  default:
-    external:
-      name: nat

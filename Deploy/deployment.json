@@ -48,57 +48,6 @@
       }
     },
     {
-      "type": "Microsoft.ContainerService/managedClusters",
-      "name": "[variables('aks_name')]",
-      "apiVersion": "2018-03-31",
-      "location": "[resourceGroup().location]",
-      "tags": {},
-      "properties": {
-        "kubernetesVersion": "[parameters('aksVersion')]",
-        "enableRBAC": true,
-        "dnsPrefix": "[variables('aks_name')]",
-        "addonProfiles": {
-          "httpApplicationRouting": {
-            "enabled": true
-          },
-          "omsagent": {
-            "enabled": true,
-            "config": {
-              "logAnalyticsWorkspaceResourceID": "[variables('omsWorkspaceId')]"
-            }
-          }
-        },
-        "agentPoolProfiles": [
-          {
-            "name": "agentpool",
-            "count": 2,
-            "vmSize": "Standard_DS2_v2",
-            "osType": "Linux",
-            "osDiskSizeGB": 0,
-            "storageProfile": "ManagedDisks"
-          },
-          {
-            "name": "npwin",
-            "count": 2,
-            "vmSize": "Standard_D2s_v3",
-            "osType": "Windows",
-            "osDiskSizeGB": 0,
-            "storageProfile": "ManagedDisks"
-          }
-        ],
-        "servicePrincipalProfile": {
-          "clientId": "[parameters('servicePrincipalId')]",
-          "secret": "[parameters('servicePrincipalSecret')]"
-        },
-        "networkProfile": {
-          "networkPlugin": "kubenet"
-        }
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', 'WorkspaceDeployment')]"
-      ]
-    },
-    {
       "type": "Microsoft.Resources/deployments",
       "name": "SolutionDeployment",
       "apiVersion": "2017-05-10",

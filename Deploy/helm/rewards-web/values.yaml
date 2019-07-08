@@ -2,7 +2,7 @@ replicaCount: 1
 applicationName: tailwindtraders
 
 image:
-  repository: tailwindtradersacr.azurecr.io/rewards.registration.api
+  repository: tailwindtradersacr.azurecr.io/tailwindtradersrewardswebsite
   tag: prod
   pullPolicy: Always
 
