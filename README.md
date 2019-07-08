@@ -21,6 +21,17 @@ For the first scenario you have to deploy the ARM templates from following links
 
 >**Note** Remember to put the same SQL Server Username / Password on all ARM templates
 
+Steps:
+1. Open the `TailwindTraders.Rewards.Website.sln` solution.
+1. Right click the website project.
+1. Select the `Publish...` option.
+1. Pick an `App Service` publish target with the `Select Existing` option.
+1. Choose the already created Application Service from your resource group.
+1. Select `Create`. This will create the publish profile
+1. Select `Publish`. This will build and publish the rewards website to Azure.
+
+Do the same for the Azure Function in the `TailwindTraders.Rewards.Function.sln` solution.
+
 ## Scenario 2
 Create the infrastructure needed for TailwindTraders-Rewards without deploying the Rewards website as application service:
 - [Deploy common services](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment-base.json)
@@ -111,12 +122,10 @@ If using Powershell, have to run `./Deploy-Images-Aks.ps1` with following parame
 * `-tag <tag>` Docker images tag to use. Defaults to  `latest`
 * `-charts <charts>` List of comma-separated values with charts to install. Defaults to `*` (all)
 * `-valueSFile <values-file>`: Values file to use (defaults to `gvalues.yaml`)
+* `-namespace`: Containers namespace (defaults to empty which means the one in .kube/config)
 * `-tlsEnv prod|staging` If **SSL/TLS support has been installed**, you have to use this parameter to enable https endpoints. Value must be `staging` or `prod` and must be the same value used when you installed SSL/TLS support. If SSL/TLS is not installed, you can omit this parameter.
-* `-autoscale <boolean>`: Flag to activate HPA autoscaling. Defaults to `false`.
 
-
-
-# Data initial migration and seeding
+## Data initial migration and seeding
 Previously to launch for first time the application you must create a Database in SQL Server named `rewardsdb` and execute the sql script `Source\SQLScripts\CreateTablesAndPopulate.sql`, in order to create the needed tables and seeding with the required data.
 
 # Demo Script

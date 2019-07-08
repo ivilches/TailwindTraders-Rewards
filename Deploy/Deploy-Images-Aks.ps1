@@ -96,7 +96,7 @@ Write-Host "Configuration file used is $valuesFile" -ForegroundColor Yellow
 
 if ($charts.Contains("rw") -or  $charts.Contains("*")) {
     Write-Host "Rewards Web -rw" -ForegroundColor Yellow
-    $command = createHelmCommand "helm  upgrade --install $name-rewards-web rewards-web -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/rewards.registration.api --set image.tag=$tag --set hpa.activated=$autoscale"
+    $command = createHelmCommand "helm  upgrade --install $name-rewards-web rewards-web -f $valuesFile --set ingress.hosts={$aksHost} --set image.repository=$acrLogin/rewards.web --set image.tag=$tag"
     cmd /c "$command"
 }
 
