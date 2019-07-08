@@ -1,24 +1,24 @@
-{{- $name := include "tt-rewards-registration.fullname" . -}}
+{{- $name := include "tt-rewards-web.fullname" . -}}
 {{- $cfgname := printf "%s-%s" "cfg" $name -}}
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "tt-rewards-registration.fullname" . }}
+  name: {{ template "tt-rewards-web.fullname" . }}
   labels:
-    app: {{ template "tt-rewards-registration.name" . }}
-    chart: {{ template "tt-rewards-registration.chart" . }}
+    app: {{ template "tt-rewards-web.name" . }}
+    chart: {{ template "tt-rewards-web.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "tt-rewards-registration.name" . }}
+      app: {{ template "tt-rewards-web.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "tt-rewards-registration.name" . }}
+        app: {{ template "tt-rewards-web.name" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ .Values.inf.sa }}

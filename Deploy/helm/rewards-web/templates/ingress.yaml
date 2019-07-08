@@ -1,14 +1,14 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "tt-rewards-registration.fullname" . -}}
-{{- $ingressPath := .Values.inf.ingress.rewards-registration.path -}}
+{{- $fullName := include "tt-rewards-web.fullname" . -}}
+{{- $ingressPath := .Values.inf.ingress.webrewards.path -}}
 
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app: {{ template "tt-rewards-registration.name" . }}
-    chart: {{ template "tt-rewards-registration.chart" . }}
+    app: {{ template "tt-rewards-web.name" . }}
+    chart: {{ template "tt-rewards-web.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- with .Values.ingress.annotations }}
@@ -33,7 +33,7 @@ spec:
         paths:
           - path: {{ $ingressPath }}
             backend:
-              serviceName: rewards-registration
+              serviceName: webrewards
               servicePort: http
   {{- end }}
 {{- end }}
