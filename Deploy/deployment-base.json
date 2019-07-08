@@ -1,0 +1,110 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "web_name": "[concat('ttrewards',uniqueString(resourceGroup().id))]",
+    "plan_name": "[concat('ttrewardsplan',uniqueString(resourceGroup().id))]",
+    "function_name": "[concat('ttrewardsfunction',uniqueString(resourceGroup().id))]",
+    "storage_name": "[concat('ttstorage',uniqueString(resourceGroup().id))]",
+    "logicapp_name": "[concat('ttlogicapp',uniqueString(resourceGroup().id))]",
+    "definition": "[concat('{\"contentVersion\":\"1.0.0.0\",\"parameters\":{},\"actions\":{},\"triggers\":{},\"outputs\":{},\"$schema\":\"', variables('workflowSchema'), '\"}')]",
+    "workflowSchema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#"
+  },
+  "resources": [
+      {
+        "type": "microsoft.insights/components",
+        "name": "[variables('web_name')]",
+        "apiVersion": "2014-08-01",
+        "location": "westus2",
+        "properties": {
+            "ApplicationId": "[variables('web_name')]",
+            "Application_Type": "web",
+            "Flow_Type": "Brownfield",
+            "Request_Source": "IbizaWebAppExtensionCreate"
+        }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "S1"
+      },
+      "kind": "app",
+      "name": "[variables('plan_name')]",
+      "apiVersion": "2017-08-01",
+      "location": "[resourceGroup().location]"
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[variables('function_name')]",
+      "apiVersion": "2015-08-01",
+      "location": "[resourceGroup().location]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "tags": {
+
+      },
+      "properties": {
+        "name": "[variables('function_name')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('plan_name'))]",
+        "kind": "functionapp",
+        "httpsOnly": true
+      },
+      "resources": [
+        {
+          "type": "config",
+          "name": "appsettings",
+          "apiVersion": "2015-08-01",
+          "properties": {
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components/', variables('web_name')), '2015-05-01').InstrumentationKey]",
+            "FUNCTIONS_EXTENSION_VERSION": "~1",
+            "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storage_name'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storage_name')), '2015-06-15').key1)]",
+            "WEBSITE_CONTENTSHARE": "[toLower(variables('function_name'))]",
+            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storage_name'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storage_name')), '2015-06-15').key1)]",
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storage_name'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storage_name')), '2015-06-15').key1)]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Web/Sites/', variables('function_name'))]",
+            "[resourceId('microsoft.insights/components/', variables('web_name'))]"
+          ]
+        }
+      ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverFarms', variables('plan_name'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storage_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storage_name')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accountType": "Standard_LRS"
+      }
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "[variables('logicapp_name')]",
+      "apiVersion": "2016-10-01",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "definition": "[json(variables('definition'))]",
+        "parameters": {},
+        "state": "Enabled"
+      }
+    }
+  ],
+  "outputs": {
+    "web": {
+      "type": "string",
+      "value": "[variables('web_name')]"
+    },
+    "function": {
+      "type": "string",
+      "value": "[variables('function_name')]"
+    }
+  }
+}

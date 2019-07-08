@@ -8,6 +8,16 @@ You can take a look at our live running website following this address: [https:/
 
 # Deploy to Azure
 
+There are two scenarios to deploy this project into Azure:
+1. As a standalone PaaS in Azure. Adding the rewards web as an application service.
+2. As part of the TailwindTraders-Backend project (as services inside an AKS equal or newer than 1.14). Adding the rewards web as a Windows container inside AKS.
+
+
+
+For the scenario you have to follow the TailwindTraders-Backend [deployment instructions](https://github.com/microsoft/TailwindTraders-Backend/blob/master/Documents/Azure-Deployment.md).
+
+Deploy TT Rewards ARM template.
+
 We have added an ARM template so you can automate the creation of the resources required for this app.
 
 [![Deploy to Azure](Documents/Images/deploy-to-azure.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment.json)
