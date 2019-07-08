@@ -66,6 +66,33 @@ The parameters that `Generate-Config.ps1` accepts are:
 
 The script checks that all needed resources exists in the resource group. If some resource is missing or there is an unexpected resource, the script exits.
 
+## Create secrets on the AKS
+
+Docker images are stored in a ACR (a private Docker Registry hosted in Azure).
+
+Before deploying anything on AKS, a secret must be installed to allow AKS to connect to the ACR through a Kubernetes' service account. 
+
+To do so from a Bash terminal run the file `./create-secret.sh` with following parameters:
+
+* `-g <group>` Resource group where AKS is
+* `--acr-name <name>`  Name of the ACR
+* `--clientid <id>` Client id of the service principal to use
+* `--password <pwd>` Service principal password
+
+Please, note that the Service principal must be already exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
+
+If using Powershell run the `./Create-Secret.ps1` with following parameters:
+
+* `-resourceGroup <group>` Resource group where AKS is
+* `-acrName <name>`  Name of the ACR
+
+This will create the secret in AKS **using ACR credentials**. If ACR login is not enabled you can create a secret by using a service principal. For use a Azure service principal following additional parameters are needed:
+
+* `-clientId <id>` Client id of the service principal to use
+* `-password <pwd>` Service principal password
+
+Please, note that the Service principal must be already exist. To create a service principal you can run the command `az ad sp create-for-rbac`.
+
 ## Build & deploy images to ACR
 
 ### Publish the project
