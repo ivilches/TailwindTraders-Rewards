@@ -1,0 +1,32 @@
+# Template for generating a gvalues file
+
+inf:
+  sa: ttsa
+  db:
+    rewards:
+      host: {{dbhostrewards}}
+      port: "1433"
+      catalog: rewards
+      user: {{dbuserrewards}}
+      pwd: {{dbpwdrewards}}
+  appinsights:
+    id: ""
+  ingress:
+    webrewards:
+      path: /webrewards
+
+# Shared ingress configurations
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: {{ingressclass}}
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+  tls: []
+
+sec:
+  issuer: {{secissuer}}
+  securityKey: {{seckey}}

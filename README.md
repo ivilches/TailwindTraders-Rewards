@@ -12,15 +12,93 @@ There are two scenarios to deploy this project into Azure:
 1. As a standalone PaaS in Azure. Adding the rewards web as an application service.
 2. As part of the TailwindTraders-Backend project (as services inside an AKS equal or newer than 1.14). Adding the rewards web as a Windows container inside AKS.
 
+## Scenario 1
+For the first scenario you have to deploy the ARM templates from following links:
+
+- [Deploy common services](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment-base.json)
+- [Deploy SQL Server service](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment-sql.json) 
+- [Deploy Application service](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment-web.json)
+
+>**Note** Remember to put the same SQL Server Username / Password on all ARM templates
+
+## Scenario 2
+Create the infrastructure needed for TailwindTraders-Rewards without deploying the Rewards website as application service:
+- [Deploy common services](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment-base.json)
+- [Deploy SQL Server service](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment-sql.json) 
+
+Requirement: Deploy the whole TailwindTraders-Backend to AKS following the instructions from [Deployment Guide](https://github.com/microsoft/TailwindTraders-Backend/blob/master/Documents/DeploymentGuide.md).
+
+### Configuring services
+
+Before deploying services using Helm, you need to setup the configuration. We refer to the configuration file with the name of *gvalues* file. This file **contains all secrets and connection strings** so beware to not commit in your repo accidentally.
+
+An example of this file is in `helm/gvalues.yaml`. The deployment scripts use this file by default, **but do not rely on editing this file**. Instead create a copy of it a folder outside the repository and use the `-valuesFile` parameter of the deployment script.
+
+>**Note:** The folder `/Deploy/helm/__values/` is added to `.gitignore`, so you can keep all your configuration files in it, to avoid accidental pushes.
+
+Please refer to the comments of the file for its usage. Just ignore (but not delete) the `tls` section (it is used if TLS is enabled).
+
+### Auto generating the configuration file
+
+Generating a valid _gvalues_ file can be a bit harder, so there is a Powershell script that can do all work by you. This script assumes that all resources are deployed in the same resource group, and this resource group contains only the Tailwind Traders resources. Also assumes the Azure resources have been created using the tools provided in this repo.
+
+To auto-generate your _gvalues_ file just go to `/Deploy` folder and from a Powershell window, type the following:
+
+```
+.\Generate-Config.ps1 -resourceGroup <your-resource-group> -sqlPwd <sql-password> -outputFile helm\__values\<name-of-your-file>
+```
+
+The parameters that `Generate-Config.ps1` accepts are:
+
+* `-resourceGroup`: Resource group where all Azure resources are. **Mandatory**
+* `-sqlPwd`: Password of SQL Servers server. This parameter is **mandatory** because can't be read using Azure CLI
+* `-forcePwd`: If `$true`, the scripts updates the SQL Server to set their password to the value of `sqlPwd`. Defaults to `$false`.
+* `-outputFile`: Full path of the output file to generate. A good idea is to generate a file in `/Deploy/helm/__values/` folder as this folder is ignored by Git. If not passed the result file is written on screen.
+* `-gvaluesTemplate`: Template of the _gvalues_ file to use. The parameter defaults to the `/Deploy/helm/gvalues.template` which is the only template provided.
+
+The script checks that all needed resources exists in the resource group. If some resource is missing or there is an unexpected resource, the script exits.
+
+### Publish the project
+
+To publish the Web project, follow these instructions:
+1. Open Visual Studio as Administrator.
+2. Open the TailwindTraders.Rewards.Website solution.
+3. Right click in the TailwindTraders.Rewards.Website project and click in `Publish...`. This publish will generate the neccessary files to run the project with docker. In this case, we have a .pubxml configuration file to publish the artifacts inside the path defined in the Dockerfile (`obj/Docker/publish`)
+
+### Build & deploy images to ACR
+
+>**Note** Before you proceed change to windows containers.
+
+You can **manually use docker-compose** to build and push the images to the ACR. If using compose you can set following environment variables:
+
+* `TAG`: Will contain the generated docker images tag
+* `REGISTRY`: Registry to use. This variable should be set to the login server of the ACR
+
+Once set, you can use `docker-compose build` and `docker-compose push` to build and push the images.
+
+Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Push.ps1`. You can use this script for building and pushing ALL images to ACR. Parameters of this script are:
+
+* `resourceGroup`: Resource group where ACR is. **Mandatory**.
+* `acrName`: ACR name (not login server). **Mandatory**.
+* `dockerTag`: Tag to use for generated images (defaults to `latest`)
+* `dockerBuild`: If `$true` (default value) docker images will be built using `docker-compose build`.
+* `dockerPush`: If `$true` (default value) docker images will be push to ACR using `docker-compose push`.
+
+This script uses `az` CLI to get ACR information, and then uses `docker-compose` to build and push the images to ACR.
+
+To build an push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
+
+```
+.\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr
+```
+
+To just push the images (without building them before):
+
+```
+.\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr -dockerBuild $false
+```
 
 
-For the scenario you have to follow the TailwindTraders-Backend [deployment instructions](https://github.com/microsoft/TailwindTraders-Backend/blob/master/Documents/Azure-Deployment.md).
-
-Deploy TT Rewards ARM template.
-
-We have added an ARM template so you can automate the creation of the resources required for this app.
-
-[![Deploy to Azure](Documents/Images/deploy-to-azure.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FTailwindTraders-Rewards%2Fmaster%2FDeploy%2Fdeployment.json)
 
 # Data initial migration and seeding
 Previously to launch for first time the application you must create a Database in SQL Server named `rewardsdb` and execute the sql script `Source\SQLScripts\CreateTablesAndPopulate.sql`, in order to create the needed tables and seeding with the required data.
