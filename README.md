@@ -9,8 +9,8 @@ You can take a look at our live running website following this address: [https:/
 # Deploy to Azure
 
 There are two scenarios to deploy this project into Azure:
-1. As a standalone PaaS in Azure. Adding the rewards web as an application service.
-2. As part of the TailwindTraders-Backend project (as services inside an AKS equal or newer than 1.14). Adding the rewards web as a Windows container inside AKS.
+1. **Scenario 1:** As a standalone PaaS in Azure. Adding the rewards web as an application service.
+2. **Scenario 2:** As part of the TailwindTraders-Backend project (as services inside an AKS equal or newer than 1.14). Adding the rewards web as a Windows container inside AKS.
 
 ## Scenario 1
 For the first scenario you have to deploy the ARM templates from following links:
@@ -21,7 +21,7 @@ For the first scenario you have to deploy the ARM templates from following links
 
 >**Note** Remember to put the same SQL Server Username / Password on all ARM templates
 
-Steps:
+Steps to publish website to Azure:
 1. Open the `TailwindTraders.Rewards.Website.sln` solution.
 1. Right click the website project.
 1. Select the `Publish...` option.
@@ -51,7 +51,7 @@ Please refer to the comments of the file for its usage. Just ignore (but not del
 
 ### Auto generating the configuration file
 
-Generating a valid _gvalues_ file can be a bit harder, so there is a Powershell script that can do all work by you. This script assumes that all resources are deployed in the same resource group, and this resource group contains only the Tailwind Traders resources. Also assumes the Azure resources have been created using the tools provided in this repo.
+Generating a valid _gvalues_ file can be a bit harder, so there is a Powershell script that can do all work by you. This script assumes that all resources are deployed in the same resource group, and this resource group contains only the Tailwind Traders Rewards resources. Also assumes the Azure resources have been created using the tools provided in this repo.
 
 To auto-generate your _gvalues_ file just go to `/Deploy` folder and from a Powershell window, type the following:
 
@@ -78,7 +78,7 @@ To publish the Web project, follow these instructions:
 
 ### Build & deploy images to ACR
 
->**Note** Before you proceed change to windows containers.
+>**Note** Before you proceed, switch to windows containers in the Docker Desktop right click menu.
 
 You can **manually use docker-compose** to build and push the images to the ACR. If using compose you can set following environment variables:
 
@@ -97,7 +97,7 @@ Additionaly there is a Powershell script in the `Deploy` folder, named `Build-Pu
 
 This script uses `az` CLI to get ACR information, and then uses `docker-compose` to build and push the images to ACR.
 
-To build an push images tagged with v1 to a ACR named my-acr in resource group named my-rg:
+To build an push images tagged with v1 to a ACR named my-acr in resource group named my-rg (located in the `Deploy` folder):
 
 ```
 .\Build-Push.ps1 -resourceGroup my-rg -dockerTag v1 -acrName my-acr
@@ -110,8 +110,6 @@ To just push the images (without building them before):
 ```
 
 ### Deploying services
-
->**Note**: If you want to add SSL/TLS support on the cluster (needed to use https on the web) plase read following section **before installing the backend**.
 
 If using Powershell, have to run `./Deploy-Images-Aks.ps1` with following parameters:
 
