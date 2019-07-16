@@ -28,6 +28,8 @@ env:
     - name: ConnectionString
     - name: SecurityKey
     - name: Issuer
+    - name: AdminUsername
+    - name: AdminPassword
   values:
     - name: ASPNETCORE_ENVIRONMENT
       value: Development

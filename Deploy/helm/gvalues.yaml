@@ -19,6 +19,10 @@ inf:
     webrewards:
       path: /webrewards
 
+webrewards:
+  adminuser: admin
+  adminpassword: password
+
 # Shared ingress configurations
 ingress:
   enabled: true

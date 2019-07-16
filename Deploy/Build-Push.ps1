@@ -3,7 +3,7 @@ Param(
     [parameter(Mandatory=$true)][string]$acrName,
     [parameter(Mandatory=$false)][bool]$dockerBuild=$true,
     [parameter(Mandatory=$false)][bool]$dockerPush=$true,
-    [parameter(Mandatory=$false)][string]$dockerTag="latest",
+    [parameter(Mandatory=$false)][string]$dockerTag="latest"
 )
 
 Write-Host "---------------------------------------------------" -ForegroundColor Yellow
@@ -33,7 +33,7 @@ if ($dockerPush) {
     Write-Host "---------------------------------------------------" -ForegroundColor Yellow
     Push-Location ..\Source
     docker login -p $acrPwd -u $acrUser $acrLoginServer
-    az acr login -n $acr
+    az acr login -n $acrName
     $env:TAG=$dockerTag
     $env:REGISTRY=$acrLoginServer 
     docker-compose push
