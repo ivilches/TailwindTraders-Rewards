@@ -13,7 +13,6 @@ Param(
 function validate {
     $valid = $true
 
-
     if ([string]::IsNullOrEmpty($aksName)) {
         Write-Host "No AKS name. Use -aksName to specify name" -ForegroundColor Red
         $valid=$false

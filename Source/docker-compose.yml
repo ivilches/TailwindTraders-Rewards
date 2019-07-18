@@ -7,4 +7,5 @@ services:
       context: .\Website
       dockerfile: Dockerfile
       args:
-        sdkImageTag: 3.5
+        BASEURL: /rewards
+        sdkImageTag: 3.5-windowsservercore-ltsc2019

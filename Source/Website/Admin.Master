@@ -1,42 +1,38 @@
 ﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Admin.master.cs" Inherits="Tailwind.Traders.Rewards.Web.SiteMaster" %>
-
 <!DOCTYPE html>
 <html lang="en">
+    <head runat="server">
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tailwind Trader Admin Form</title>
 
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tailwind Trader Admin Form</title>
+        <link href="[$BASE_URL]/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <link href="[$BASE_URL]/Content/bootstrap.css" rel="stylesheet" type="text/css" runat="server" />
+        <link href="[$BASE_URL]/Content/styles/admin.css" rel="stylesheet" type="text/css" runat="server" />
+        <link href="[$BASE_URL]/Content/img/favicon/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+        <link href="[$BASE_URL]/Content/img/favicon/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32">
+        <link href="[$BASE_URL]/Content/img/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16">
+        <link href="[$BASE_URL]/Content/img/favicon/site.webmanifest" rel="manifest">
+        <link href="[$BASE_URL]/Content/img/favicon/safari-pinned-tab.svg" rel="mask-icon" color="#2f4b66">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="theme-color" content="#ffffff">
+    </head>
 
-    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <body>
+        <form id="form1" runat="server">
+            <div>
+                <asp:ContentPlaceHolder ID="Login" runat="server">
+                </asp:ContentPlaceHolder>
+                <asp:ContentPlaceHolder ID="List" runat="server">
+                </asp:ContentPlaceHolder>
+                <asp:ContentPlaceHolder ID="Create" runat="server">
+                </asp:ContentPlaceHolder>
+                <asp:ContentPlaceHolder ID="Update" runat="server">
+                </asp:ContentPlaceHolder>
+            </div>
+        </form>
 
-    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" runat="server" />
-    <link href="~/Content/styles/admin.css" rel="stylesheet" type="text/css" runat="server" />
-
-    <link rel="apple-touch-icon" sizes="180x180" href="/Content/img/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/Content/img/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/Content/img/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/Content/img/favicon/site.webmanifest">
-    <link rel="mask-icon" href="/Content/img/favicon/safari-pinned-tab.svg" color="#2f4b66">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="theme-color" content="#ffffff">
-</head>
-
-<body>
-    <form id="form1" runat="server">
-        <div>
-            <asp:ContentPlaceHolder ID="Login" runat="server">
-            </asp:ContentPlaceHolder>
-            <asp:ContentPlaceHolder ID="List" runat="server">
-            </asp:ContentPlaceHolder>
-            <asp:ContentPlaceHolder ID="Create" runat="server">
-            </asp:ContentPlaceHolder>
-            <asp:ContentPlaceHolder ID="Update" runat="server">
-            </asp:ContentPlaceHolder>
-        </div>
-    </form>
-
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <script src="/Content/bootstrap.min.js"></script>
-</body>
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="[$BASE_URL]/Content/bootstrap.min.js"></script>
+    </body>
 </html>
