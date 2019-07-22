@@ -17,7 +17,7 @@ inf:
     id: ""
   ingress:
     webrewards:
-      path: /webrewards
+      path: /
 
 webrewards:
   adminuser: admin

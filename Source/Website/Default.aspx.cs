@@ -27,7 +27,7 @@ namespace Tailwind.Traders.Rewards.Web
             var cid = -1;
             if (Page.IsPostBack)
             {
-                cid = int.Parse(CustomerId.Value);
+                cid = GetCustomerId();
             }
 
             var orders = OrdersData.GetOrders(5);
@@ -44,18 +44,18 @@ namespace Tailwind.Traders.Rewards.Web
                 var customer = CustomerData.GetCustomerById(cid);
                 MapCustomer(customer);
             }
-            
+
 
             lblCheckbox.Attributes.Add("for", EnrollCheckbox.ClientID);
         }
 
         protected void EnrollChckedChanged(object sender, EventArgs e)
         {
-            var cid = int.Parse(CustomerId.Value);
+            var cid = GetCustomerId();
 
             var customer = CustomerData.GetCustomerById(cid);
 
-            if (customer.Enrrolled == EnrollmentStatusEnum.Uninitialized)
+            if (customer != null && customer.Enrrolled == EnrollmentStatusEnum.Uninitialized)
             {
                 customer.Enrrolled = EnrollmentStatusEnum.Started;
                 CustomerData.ChangeEnrollmentStatus(customer);
@@ -64,7 +64,7 @@ namespace Tailwind.Traders.Rewards.Web
             }
         }
 
-    private void BypassLogicAppIfNeeded(Customer customer)
+        private void BypassLogicAppIfNeeded(Customer customer)
         {
             var bypassSettings = ConfigurationManager.AppSettings["ByPassLogicApp"];
             if (string.IsNullOrEmpty(bypassSettings) || !bool.Parse(bypassSettings))
@@ -114,11 +114,14 @@ namespace Tailwind.Traders.Rewards.Web
             }
 
             RandomizeOrderHistory();
-            SearchTextBox.Text = string.Empty;            
+            SearchTextBox.Text = string.Empty;
         }
 
         private void MapCustomer(Customer customer)
         {
+            lblCheckbox.InnerText = "No customer - no enrollment";
+            if (customer == null) return;
+
             CustomerId.Value = customer.CustomerId.ToString();
             AccNo.InnerText = customer.AccountCode;
             Address1.InnerText = customer.FirstAddress;
@@ -166,6 +169,16 @@ namespace Tailwind.Traders.Rewards.Web
 
             orderList.DataSource = shuffledOrders;
             orderList.DataBind();
+        }
+
+        private int GetCustomerId()
+        {
+            if (CustomerId != null && int.TryParse(CustomerId.Value, out int cidResult))
+            {
+                return cidResult;
+            }
+
+            return -1;
         }
     }
 }

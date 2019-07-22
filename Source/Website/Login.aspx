@@ -4,8 +4,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <link href="[$BASE_URL]/Content/bootstrap.css" rel="stylesheet" type="text/css" runat="server" />
-    <link href="[$BASE_URL]/Content/styles/login.css" rel="stylesheet" type="text/css" runat="server" />
+    <link href="/Content/bootstrap.css" rel="stylesheet" type="text/css" runat="server" />
+    <link href="/Content/styles/login.css" rel="stylesheet" type="text/css" runat="server" />
     <title>Login</title>
 </head>
 <body>

@@ -11,16 +11,15 @@ namespace Tailwind.Traders.Rewards.Web.Data
         public static IEnumerable<Order> GetOrders(int numberOfOrders = 5)
         {
             var query = string.Format("SELECT TOP {0} * FROM ORDERS", numberOfOrders);
-            
+
             try
             {
-                var result =  DataAccessHandler.ExecuteSelect(query);
+                var result = DataAccessHandler.ExecuteSelect(query);
                 return GetMappedOrders(result);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
+
+            return new List<Order>();
         }
 
         public static IEnumerable<Order> GetOrders(int customerId, int numberOfOrders = 5)
@@ -33,10 +32,9 @@ namespace Tailwind.Traders.Rewards.Web.Data
                 var result = DataAccessHandler.ExecuteSelect(query, new SqlParameter[] { param });
                 return GetMappedOrders(result);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }            
+            catch { }
+
+            return new List<Order>();
         }
 
         public static IEnumerable<Order> GetOrdersRandomized()
@@ -48,10 +46,9 @@ namespace Tailwind.Traders.Rewards.Web.Data
                 var result = DataAccessHandler.ExecuteSelect(query);
                 return GetMappedOrders(result);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
+
+            return new List<Order>();
         }
 
         public static void AddOrder(Order order)
@@ -86,10 +83,7 @@ namespace Tailwind.Traders.Rewards.Web.Data
             {
                 DataAccessHandler.ExecuteNonSelect(query, parameters);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
         }
 
         public static void UpdateOrder(Order order)
@@ -118,10 +112,7 @@ namespace Tailwind.Traders.Rewards.Web.Data
             {
                 DataAccessHandler.ExecuteNonSelect(query, parameters);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
         }
 
         public static void DeleteOrder(int orderId)
@@ -134,10 +125,7 @@ namespace Tailwind.Traders.Rewards.Web.Data
             {
                 DataAccessHandler.ExecuteNonSelect(query, new SqlParameter[] { param });
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
         }
 
         private static IEnumerable<Order> GetMappedOrders(DataTable ordersResult)

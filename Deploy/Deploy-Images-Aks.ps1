@@ -77,6 +77,7 @@ if (-not $aksHost) {
     $aksHost=$(az aks show -n $aksName -g $resourceGroup --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o json | ConvertFrom-Json)
 }
 
+$aksHost="rewards.$aksHost"
 
 Write-Host "acr login server is $acrLogin" -ForegroundColor Yellow
 Write-Host "aksHost is $aksHost" -ForegroundColor Yellow

@@ -7,7 +7,7 @@
 
     <aside class="grid__aside">
         <h1>
-            <img class="logo" src="[$BASE_URL]/Content/img/logo.svg" alt="Tailwind Trader's blue logo" />
+            <img class="logo" src="/Content/img/logo.svg" alt="Tailwind Trader's blue logo" />
         </h1>
         <asp:PlaceHolder runat="server" ID="spanCustomer" Visible="true">
             <h2 class="title">Contact info</h2>

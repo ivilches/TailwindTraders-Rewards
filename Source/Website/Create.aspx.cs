@@ -76,11 +76,6 @@ namespace Tailwind.Traders.Rewards.Web
                 lblMessageCreate.Text = "It was not possible to create a customer";
                 dvMessageCreate.CssClass = "alert alert-error";
             }
-        }        
-
-        protected void OnClickDeleteCustomer(object sender, EventArgs e)
-        {
-            CustomerData.DeleteCustomer(1);
         }
 
         protected void OnClickCancel(object sender, EventArgs e)

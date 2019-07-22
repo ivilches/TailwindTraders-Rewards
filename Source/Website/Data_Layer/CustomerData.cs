@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using Tailwind.Traders.Rewards.Web.Models;
@@ -17,10 +16,9 @@ namespace Tailwind.Traders.Rewards.Web.Data
                 var result = DataAccessHandler.ExecuteSelect(query);
                 return GetMappedCustomer(result.Rows[0]);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
+
+            return null;
         }
 
         public static Customer GetCustomerById(int customerId)
@@ -36,16 +34,13 @@ namespace Tailwind.Traders.Rewards.Web.Data
                 {
                     return GetMappedCustomer(result.Rows[0]);
                 }
+            }
+            catch { }
 
-                return null;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return null;
         }
 
-        
+
         public static Customer GetCustomerByEmailOrName(string emailOrName)
         {
             var query = "SELECT TOP 1 * FROM CUSTOMERS WHERE FirstName = @emailOrName OR Email = @emailOrName";
@@ -55,18 +50,15 @@ namespace Tailwind.Traders.Rewards.Web.Data
             {
                 var result = DataAccessHandler.ExecuteSelect(query, new SqlParameter[] { param });
 
-                if(result.Rows.Count > 0 && result.Rows[0] != null)
+                if (result.Rows.Count > 0 && result.Rows[0] != null)
                 {
                     return GetMappedCustomer(result.Rows[0]);
                 }
 
-                return null;
-                
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
+
+            return null;
         }
 
         public static IEnumerable<Customer> GetCustomers()
@@ -78,10 +70,9 @@ namespace Tailwind.Traders.Rewards.Web.Data
                 var result = DataAccessHandler.ExecuteSelect(query);
                 return GetMappedCustomers(result);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
+
+            return new List<Customer>();
         }
 
         public static void ChangeEnrollmentStatus(Customer customer)
@@ -96,10 +87,7 @@ namespace Tailwind.Traders.Rewards.Web.Data
             {
                 DataAccessHandler.ExecuteNonSelect(query, parameters);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            catch { }
         }
 
         public static void AddCustomer(Customer customer)
@@ -153,14 +141,7 @@ namespace Tailwind.Traders.Rewards.Web.Data
                 new SqlParameter("@FaxNumber", customer.FaxNumber)
             };
 
-            try
-            {
-                DataAccessHandler.ExecuteNonSelect(query, parameters);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            DataAccessHandler.ExecuteNonSelect(query, parameters);
         }
 
         public static void UpdateCustomer(Customer customer)
@@ -201,15 +182,8 @@ namespace Tailwind.Traders.Rewards.Web.Data
                 new SqlParameter("@CustomerId", customer.CustomerId)
             };
 
-            try
-            {
-                DataAccessHandler.ExecuteNonSelect(query, parameters);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }        
+            DataAccessHandler.ExecuteNonSelect(query, parameters);
+        }
 
         public static void DeleteCustomer(int customerId)
         {
@@ -217,14 +191,7 @@ namespace Tailwind.Traders.Rewards.Web.Data
 
             var param = new SqlParameter("@CustomerId", customerId);
 
-            try
-            {
-                DataAccessHandler.ExecuteNonSelect(query, new SqlParameter[] { param });
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            DataAccessHandler.ExecuteNonSelect(query, new SqlParameter[] { param });
         }
 
         private static Customer GetMappedCustomer(DataRow customerRow)
